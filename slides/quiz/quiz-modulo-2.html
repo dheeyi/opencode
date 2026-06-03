@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz · Módulo 2 · OpenCode</title>
+<style>
+  :root{
+    --bg:#0d1117; --win:#161b22; --border:#30363d; --deep:#0a0d12;
+    --green:#39d353; --cyan:#00d9ff; --amber:#f59e0b; --purple:#a78bfa;
+    --text:#c9d1d9; --muted:#7d8590; --white:#f0f6fc; --red:#ff5f57; --yellow:#febc2e;
+    --mono:'Cascadia Code',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);font-family:var(--mono);color:var(--text);
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .win{width:min(1100px,100%);background:var(--win);border:1px solid var(--border);
+    border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border)}
+  .dot{width:13px;height:13px;border-radius:50%}
+  .r{background:var(--red)}.y{background:var(--yellow)}.g{background:var(--green)}
+  .path{margin-left:14px;color:var(--muted);font-size:15px}
+  .brand{margin-left:auto;color:var(--white);font-size:15px}
+  .brand b{color:var(--green)}
+  .body{padding:40px 48px;min-height:460px;display:flex;flex-direction:column}
+  .eyebrow{color:var(--cyan);font-size:16px;letter-spacing:.5px}
+  /* progreso */
+  .pg{display:flex;gap:10px;margin:18px 0 10px}
+  .pg i{width:14px;height:14px;border-radius:50%;border:2px solid var(--muted)}
+  .pg i.done{background:var(--green);border-color:var(--green)}
+  .pg i.cur{background:var(--cyan);border-color:var(--cyan);transform:scale(1.25)}
+  /* pregunta */
+  .qnum{color:var(--amber);font-size:18px}
+  .q{color:var(--white);font-size:30px;line-height:1.3;margin:6px 0 28px;font-weight:600}
+  .opts{display:flex;flex-direction:column;gap:14px}
+  .opt{display:flex;align-items:center;gap:16px;padding:18px 22px;border:1px solid var(--border);
+    border-radius:10px;background:var(--deep);font-size:22px;color:var(--text);transition:.25s}
+  .opt .let{color:var(--cyan);font-weight:700}
+  .opt .ck{margin-left:auto;color:var(--green);font-size:24px;opacity:0;transition:.25s}
+  .opt.correct{border-color:var(--green);background:rgba(57,211,83,.12);color:var(--white)}
+  .opt.correct .let{color:var(--green)}
+  .opt.correct .ck{opacity:1}
+  .opt.wrong{opacity:.4}
+  /* timer */
+  .timer{margin-top:28px;display:flex;align-items:center;gap:16px}
+  .tnum{font-size:30px;color:var(--amber);width:54px}
+  .track{flex:1;height:8px;background:var(--deep);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+  .fill{height:100%;width:100%;background:var(--amber);border-radius:99px}
+  .timer.up .tnum{color:var(--red)}.timer.up .fill{background:var(--red)}
+  .timer.done .tnum{color:var(--green)}.timer.done .fill{background:var(--green)}
+  /* footer / acciones */
+  .foot{margin-top:auto;padding-top:28px;display:flex;align-items:center;justify-content:space-between}
+  .hint{color:var(--muted);font-size:15px}
+  .btn{font-family:var(--mono);font-size:18px;cursor:pointer;padding:12px 22px;border-radius:8px;
+    border:1px solid var(--green);background:transparent;color:var(--green);transition:.2s}
+  .btn:hover{background:rgba(57,211,83,.12)}
+  .btn.cyan{border-color:var(--cyan);color:var(--cyan)}
+  .btn.cyan:hover{background:rgba(0,217,255,.12)}
+  /* pantallas start/end */
+  .center{align-items:center;justify-content:center;text-align:center}
+  .big{font-size:52px;color:var(--white);margin:10px 0}
+  .sub{color:var(--muted);font-size:20px;margin-bottom:30px}
+  .copy{color:var(--muted);font-size:14px;padding:14px 18px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between}
+  .copy b{color:var(--green)}
+  /* cierre del curso (finale) */
+  .finale{animation:fade .6s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .wordmark{font-size:64px;font-weight:700;letter-spacing:-1px;margin:8px 0 4px}
+  .wordmark .o{color:var(--muted)} .wordmark .c{color:var(--white)}
+  .h2fin{font-size:34px;color:var(--white);margin:6px 0 10px}
+  .badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:26px 0 6px}
+  .badge{border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:16px;color:var(--text)}
+  .badge.is-green{border-color:var(--green);color:var(--green);background:transparent}
+  .badge.is-cyan{border-color:var(--cyan);color:var(--cyan);background:transparent}
+  .sign{color:var(--muted);font-size:16px;margin-top:14px}
+  .sign b{color:var(--green)}
+  .blink{color:var(--green);animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="bar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="path">~/edteam/opencode/modulo-2 — quiz</span>
+    <span class="brand">● <b>opencode</b></span>
+  </div>
+
+  <!-- START -->
+  <div id="start" class="body center">
+    <div class="eyebrow">MÓDULO 2 · QUIZ</div>
+    <div class="big">Repaso del módulo</div>
+    <div class="sub">5 preguntas · 10 segundos cada una</div>
+    <button class="btn" onclick="QUIZ.start()">Empezar  ▸</button>
+    <div class="hint" style="margin-top:18px">Espacio o clic: empezar · revelar · siguiente</div>
+  </div>
+
+  <!-- QUESTION -->
+  <div id="game" class="body hidden">
+    <div class="eyebrow">MÓDULO 2 · QUIZ</div>
+    <div class="pg" id="elPg"></div>
+    <div class="qnum" id="elQnum">Pregunta 1 de 5</div>
+    <div class="q" id="elQ"></div>
+    <div class="opts" id="elOpts"></div>
+    <div class="timer" id="elTimer">
+      <div class="tnum" id="elTnum">10</div>
+      <div class="track"><div class="fill" id="elFill"></div></div>
+    </div>
+    <div class="foot">
+      <span class="hint" id="elHint">Lee la pregunta y pulsa Empezar (10s)</span>
+      <button class="btn" id="elBtn" onclick="QUIZ.action()">Empezar</button>
+    </div>
+  </div>
+
+  <!-- END · cierre del curso -->
+  <div id="end" class="body center finale hidden">
+    <div class="eyebrow">CURSO DE OPENCODE · 2026</div>
+    <div class="wordmark"><span class="o">open</span><span class="c">code</span></div>
+    <div class="h2fin">¡Curso completado!  ✓</div>
+    <div class="sub">De instalar OpenCode a un entorno que planifica, construye,<br>
+      revisa, documenta y publica Pull Requests por ti.</div>
+    <div class="badges">
+      <span class="badge is-green">Plan / Build</span>
+      <span class="badge is-cyan">AGENTS.md</span>
+      <span class="badge is-green">Agents</span>
+      <span class="badge is-cyan">Skills</span>
+      <span class="badge is-green">MCP</span>
+    </div>
+    <div class="sign">$ <b>William Barra</b> <span class="blink">▮</span>&nbsp;&nbsp;gracias por acompañarme en este curso</div>
+    <button class="btn cyan" onclick="QUIZ.start()" style="margin-top:24px">Repetir quiz  ↺</button>
+  </div>
+
+  <div class="copy"><span>[ edteam ] · curso de OpenCode · 2026</span><b>William Barra</b></div>
+</div>
+
+<script>
+// Quiz interactivo — HTML + CSS + JavaScript puro (sin librerías).
+const QUESTIONS = [
+  { q:"¿Dónde se define un command propio?",
+    a:[".opencode/commands/<nombre>.md","En el package.json del proyecto"], correct:0 },
+  { q:"¿Qué hace «mode: subagent» en un agente?",
+    a:["Lo vuelve un especialista que invocas con @","Lo desactiva por completo"], correct:0 },
+  { q:"¿Cómo se activa una Skill?",
+    a:["Tienes que invocarla manualmente con /skill",
+       "Se activa sola cuando su descripción coincide con la tarea"], correct:1 },
+  { q:"En permisos, ¿qué hace «ask»?",
+    a:["Bloquea la acción siempre","Pide tu confirmación antes de ejecutar"], correct:1 },
+  { q:"¿Qué tipo de MCP se configura con una URL y headers?",
+    a:["remote","local"], correct:0 },
+];
+const SECS = 10;
+const byId = (id) => document.getElementById(id);
+
+const QUIZ = {
+  i: 0,
+  revealed: false,
+  phase: 'ready',   // ready → running → timeup → revealed
+  raf: null,
+
+  start() { this.i = 0; this.show('game'); this.render(); },
+
+  show(which) {
+    ['start', 'game', 'end'].forEach((s) =>
+      byId(s).classList.toggle('hidden', s !== which));
+  },
+
+  render() {
+    this.revealed = false;
+    cancelAnimationFrame(this.raf);
+    const Q = QUESTIONS[this.i];
+
+    byId('elQnum').textContent = `Pregunta ${this.i + 1} de ${QUESTIONS.length}`;
+    byId('elQ').textContent = Q.q;
+
+    byId('elPg').innerHTML = QUESTIONS.map((_, k) =>
+      `<i class="${k < this.i ? 'done' : k === this.i ? 'cur' : ''}"></i>`).join('');
+
+    byId('elOpts').innerHTML = Q.a.map((t, k) =>
+      `<div class="opt" data-k="${k}"><span class="let">${k === 0 ? 'A' : 'B'})</span>` +
+      `<span>${t}</span><span class="ck">✓</span></div>`).join('');
+
+    // Timer congelado: NO arranca solo. Tú lees y pulsas "Empezar".
+    const tm = byId('elTimer');
+    tm.classList.remove('done', 'up');
+    byId('elTnum').textContent = SECS;
+    byId('elFill').style.width = '100%';
+    this.phase = 'ready';
+    byId('elBtn').textContent = 'Empezar';
+    byId('elBtn').className = 'btn';
+    byId('elHint').textContent = 'Lee la pregunta y pulsa Empezar (10s)';
+  },
+
+  // Temporizador con requestAnimationFrame + timestamp (preciso, sin desfase).
+  startTimer() {
+    this.phase = 'running';
+    byId('elBtn').textContent = 'Revelar respuesta';
+    byId('elBtn').className = 'btn';
+    byId('elHint').textContent = 'Pulsa Revelar cuando quieras (o espera los 10s)';
+    const dur = SECS * 1000;
+    const t0 = performance.now();
+    byId('elTnum').textContent = SECS;
+    byId('elFill').style.width = '100%';
+
+    const tick = (now) => {
+      if (this.revealed) return;
+      const remain = Math.max(dur - (now - t0), 0);
+      byId('elTnum').textContent = Math.ceil(remain / 1000);
+      byId('elFill').style.width = (remain / dur * 100) + '%';
+      if (remain > 0) {
+        this.raf = requestAnimationFrame(tick);
+      } else {
+        byId('elTnum').textContent = '0';
+        byId('elFill').style.width = '0%';
+        this.timeUp();
+      }
+    };
+    this.raf = requestAnimationFrame(tick);
+  },
+
+  // Se acabó el tiempo: NO revela. Espera a que tú pulses "Revelar".
+  timeUp() {
+    this.phase = 'timeup';
+    byId('elTimer').classList.add('up');
+    byId('elHint').textContent = '¡Tiempo! Pulsa Revelar respuesta';
+  },
+
+  reveal() {
+    if (this.revealed) return;
+    this.revealed = true;
+    this.phase = 'revealed';
+    cancelAnimationFrame(this.raf);
+    const Q = QUESTIONS[this.i];
+
+    byId('elTimer').classList.remove('up');
+    byId('elTimer').classList.add('done');
+    byId('elTnum').textContent = '✓';
+    byId('elFill').style.width = '100%';
+
+    document.querySelectorAll('#elOpts .opt').forEach((el) => {
+      const k = +el.dataset.k;
+      el.classList.add(k === Q.correct ? 'correct' : 'wrong');
+    });
+
+    const last = this.i === QUESTIONS.length - 1;
+    byId('elBtn').textContent = last ? 'Ver resultado  ▸' : 'Siguiente  ▸';
+    byId('elBtn').className = 'btn cyan';
+    byId('elHint').textContent = 'Pulsa Espacio para continuar';
+  },
+
+  next() {
+    if (this.i < QUESTIONS.length - 1) { this.i++; this.render(); }
+    else { cancelAnimationFrame(this.raf); this.show('end'); }
+  },
+
+  // Espacio / clic, según la fase: empezar → revelar → siguiente.
+  action() {
+    if (this.phase === 'ready') this.startTimer();
+    else if (this.phase === 'revealed') this.next();
+    else this.reveal();
+  },
+};
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' || e.code === 'Enter') {
+    e.preventDefault();
+    if (!byId('start').classList.contains('hidden')) QUIZ.start();
+    else if (!byId('end').classList.contains('hidden')) QUIZ.start();
+    else QUIZ.action();
+  }
+});
+</script>
+</body>
+</html>
