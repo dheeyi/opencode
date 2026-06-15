@@ -1,0 +1,19 @@
+.button-example {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.button-example--primary {
+  background: #3b82f6;
+  color: #fff;
+}
+.button-example--secondary {
+  background: #e5e7eb;
+  color: #111;
+}
+.button-example--danger {
+  background: #ef4444;
+  color: #fff;
+}
