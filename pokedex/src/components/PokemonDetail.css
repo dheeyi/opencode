@@ -1,0 +1,124 @@
+.pokemon-detail {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pokemon-detail__back {
+  align-self: flex-start;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.pokemon-detail__back:hover {
+  text-decoration: underline;
+}
+
+.pokemon-detail__sprite {
+  width: 160px;
+  height: 160px;
+  image-rendering: pixelated;
+}
+
+.pokemon-detail__name {
+  font-family: var(--heading);
+  font-size: 24px;
+  margin: 0;
+  color: var(--text-h);
+}
+
+.pokemon-detail__tags {
+  display: flex;
+  gap: 8px;
+}
+
+.pokemon-detail__type {
+  background: var(--accent-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-h);
+}
+
+.pokemon-detail__grid {
+  display: flex;
+  gap: 32px;
+}
+
+.pokemon-detail__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 1rem;
+}
+
+.pokemon-detail__label {
+  font-size: 0.8rem;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.pokemon-detail__stats {
+  width: 100%;
+}
+
+.pokemon-detail__stats h2 {
+  font-family: var(--heading);
+  font-size: 18px;
+  margin: 16px 0 12px;
+  color: var(--text-h);
+}
+
+.pokemon-detail__stat-bar {
+  display: grid;
+  grid-template-columns: 80px 40px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pokemon-detail__stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text);
+  text-align: right;
+}
+
+.pokemon-detail__stat-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-h);
+  text-align: right;
+}
+
+.pokemon-detail__bar-track {
+  height: 10px;
+  background: var(--accent-bg);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.pokemon-detail__bar-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 5px;
+  transition: width 0.3s;
+}
+
+.pokemon-status {
+  text-align: center;
+  padding: 48px 24px;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.pokemon-status.error {
+  color: #ff5f57;
+}
