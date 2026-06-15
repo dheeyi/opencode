@@ -1,10 +1,15 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { PokemonCard } from './PokemonCard.jsx'
+
+function renderWithRouter(ui) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>)
+}
 
 describe('PokemonCard', () => {
   it('renders card with correct sprite and name', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <PokemonCard name="bulbasaur" id={1} sprite="https://example.com/sprite.png" />
     )
     const img = container.querySelector('img')
@@ -13,7 +18,7 @@ describe('PokemonCard', () => {
   })
 
   it('formats name with capitalized first letter', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <PokemonCard name="bulbasaur" id={1} sprite="https://example.com/sprite.png" />
     )
     const heading = container.querySelector('h3')
@@ -21,7 +26,7 @@ describe('PokemonCard', () => {
   })
 
   it('displays id with # prefix', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <PokemonCard name="charmander" id={4} sprite="https://example.com/sprite.png" />
     )
     const heading = container.querySelector('h3')
@@ -29,10 +34,11 @@ describe('PokemonCard', () => {
   })
 
   it('applies pokemon-card class', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <PokemonCard name="squirtle" id={7} sprite="https://example.com/sprite.png" />
     )
-    const article = container.querySelector('article')
-    expect(article.className).toBe('pokemon-card')
+    const link = container.querySelector('a')
+    expect(link.className).toBe('pokemon-card')
+    expect(link.getAttribute('href')).toBe('/pokemon/squirtle')
   })
 })
